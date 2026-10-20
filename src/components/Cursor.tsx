@@ -10,17 +10,21 @@ export function Cursor() {
     if (!matchMedia("(pointer: fine)").matches) return;
     document.documentElement.classList.add("has-cursor");
     let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y, raf = 0;
+    let coordinates = "";
     const move = (e: MouseEvent) => {
       x = e.clientX; y = e.clientY;
       const hot = (e.target as HTMLElement).closest("a,button,img,video,[role=button]");
       ring.current?.classList.toggle("hot", !!hot);
+      if (!raf) raf = requestAnimationFrame(loop);
     };
     const loop = () => {
+      raf = 0;
       rx += (x - rx) * 0.18; ry += (y - ry) * 0.18;
       if (dot.current) dot.current.style.transform = `translate(${x}px,${y}px)`;
       if (ring.current) ring.current.style.transform = `translate(${rx}px,${ry}px)`;
-      if (label.current) label.current.textContent = `${String(Math.round(x)).padStart(4, "0")} · ${String(Math.round(y)).padStart(4, "0")}`;
-      raf = requestAnimationFrame(loop);
+      const next = `${String(Math.round(x)).padStart(4, "0")} · ${String(Math.round(y)).padStart(4, "0")}`;
+      if (label.current && next !== coordinates) { label.current.textContent = next; coordinates = next; }
+      if (Math.abs(x - rx) > 0.01 || Math.abs(y - ry) > 0.01) raf = requestAnimationFrame(loop);
     };
     addEventListener("mousemove", move, { passive: true });
     raf = requestAnimationFrame(loop);

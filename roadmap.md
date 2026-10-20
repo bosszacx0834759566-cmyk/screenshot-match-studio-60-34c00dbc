@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Optimize image delivery, initial loading, and animation overhead without changing the design; responsive WebP images and menu verified, 17 tests pass. Original video preserved; sandbox Chromium cannot verify H.264 playback.
+
 - [x] Recover all six original media files into current-project assets without deleting archived pointers; three images load, all recovered bytes match originals, homepage/menu share the restored MP4, and full clip decoding succeeds. Sandbox Chromium cannot play H.264, so native browser playback remains unverified.
 
 - [x] Distribute the supplied editorial keywords and four number strings across existing sections; all 19 strings verified with desktop/mobile layout checks.

@@ -5,12 +5,8 @@ import { ArrowDown, ArrowUpRight, Plus, X } from "lucide-react";
 import { Scramble } from "@/components/Scramble";
 import { OriginPanel } from "@/components/OriginPanel";
 import { Cursor } from "@/components/Cursor";
-// Media is served from /public/assets with root-relative paths so it works
-// identically on the Lovable preview and on Vercel (no CDN pointers).
-const issVideo = "/assets/iss-video.mp4";
-const goddardImg = "/assets/goddard.jpg";
-const oppenheimerImg = "/assets/oppenheimer.jpg";
-const bossPortrait = "/assets/boss-portrait.png";
+import { media } from "@/media";
+const issVideo = media.video;
 import { FOUNDER_BIRTH_ISO, FOUNDER_BIRTH_EN, founderAge } from "@/founder";
 
 const seoTitle = "GodHeimer Technologies | Space & Defense Technology from Thailand";
@@ -35,7 +31,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:description", content: seoDescription },
       { name: "robots", content: "index, follow, max-image-preview:large, max-video-preview:-1" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "/" }, { rel: "preload", as: "image", href: media.poster, fetchPriority: "high" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -123,49 +119,30 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   return <span ref={ref}>{v}{suffix}</span>;
 }
 
-function Orbit() {
-  return (
-    <svg className="orbit" viewBox="0 0 800 800" fill="none" aria-hidden="true">
-      <g className="spin"><circle cx="400" cy="400" r="380" stroke="currentColor" strokeOpacity=".25" strokeDasharray="2 8" /><circle cx="400" cy="20" r="5" fill="currentColor" /></g>
-      <g className="spin-rev"><circle cx="400" cy="400" r="290" stroke="currentColor" strokeOpacity=".35" /><rect x="684" y="394" width="12" height="12" fill="currentColor" /></g>
-      <circle cx="400" cy="400" r="200" stroke="currentColor" strokeOpacity=".2" />
-      <circle cx="400" cy="400" r="110" stroke="currentColor" strokeOpacity=".5" />
-      <path d="M0 400H800M400 0V800" stroke="currentColor" strokeOpacity=".12" />
-      <path className="beam" d="M400 400L696 400" stroke="currentColor" strokeOpacity=".8" />
-      <path className="beam" d="M400 400L400 20" stroke="currentColor" strokeOpacity=".5" />
-      <circle className="pulse" cx="400" cy="400" r="8" fill="currentColor" />
-    </svg>
-  );
-}
-
 const statement = "A single communication method cannot always perform under every condition. The future requires systems that understand changing environments and adapt intelligently.".split(" ");
 
 function Index() {
   const [open, setOpen] = useState(false);
   const [hide, setHide] = useState(false);
   const [progress, setProgress] = useState(0);
-  const heroRef = useRef<HTMLElement>(null);
   const fillRef = useRef<HTMLParagraphElement>(null);
   const [lit, setLit] = useState(0);
 
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
     document.querySelectorAll(".reveal, .reveal-mask, .step").forEach((el) => io.observe(el));
-    let last = 0;
-    const onScroll = () => {
+    let last = 0, frame = 0;
+    const updateScroll = () => {
+      frame = 0;
       const y = window.scrollY; const h = document.documentElement.scrollHeight - innerHeight;
       setProgress(h > 0 ? y / h : 0); setHide(y > 200 && y > last); last = y;
       const f = fillRef.current;
       if (f) { const r = f.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35))); setLit(Math.round(p * statement.length)); }
     };
-    onScroll(); addEventListener("scroll", onScroll, { passive: true });
-    return () => { io.disconnect(); removeEventListener("scroll", onScroll); };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(updateScroll); };
+    updateScroll(); addEventListener("scroll", onScroll, { passive: true });
+    return () => { io.disconnect(); removeEventListener("scroll", onScroll); cancelAnimationFrame(frame); };
   }, []);
-
-  const onMove = (e: React.MouseEvent) => {
-    const el = heroRef.current; if (!el) return; const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - r.left}px`); el.style.setProperty("--my", `${e.clientY - r.top}px`);
-  };
 
   return (
     <main className="company-page bg-ink font-sans text-paper">
@@ -186,7 +163,7 @@ function Index() {
               <Dialog.Trigger className="menu-btn mono" aria-label="Open menu"><span className="menu-btn-fill" /><span className="menu-btn-label hidden sm:inline-block"><Scramble text="Menu" /></span><span className="menu-btn-icon"><span className="menu-bars"><span /><span /></span></span></Dialog.Trigger>
               <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 z-[60] overflow-hidden bg-ink">
-                  <video src={issVideo} autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover" />
+                  <video src={issVideo} poster={media.poster} preload="metadata" autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-ink/50" />
                 </Dialog.Overlay>
                 <Dialog.Content aria-describedby={undefined} className="site-container no-scrollbar fixed inset-0 z-[61] flex max-w-none flex-col overflow-y-auto bg-transparent pb-8 pt-6 text-paper">
@@ -203,9 +180,9 @@ function Index() {
       </header>
 
       {/* HERO */}
-      <section id="top" ref={heroRef} onMouseMove={onMove} className="hero bg-ink">
+      <section id="top" className="hero bg-ink">
         <div className="hero-media" aria-hidden="true">
-          <video src={issVideo} autoPlay loop muted playsInline preload="auto" />
+          <video src={issVideo} poster={media.poster} autoPlay loop muted playsInline preload="metadata" />
         </div>
 
         <div className="site-container relative z-10 pb-10 pt-32">
@@ -317,7 +294,7 @@ function Index() {
           </div>
           <div className="origin-grid mt-24">
             <figure className="founder-card origin-a reveal" style={{ transitionDelay: "0ms" }}>
-              <OriginPanel src={goddardImg} alt="Robert H. Goddard" code="GH-01" tag="SPACE" coords="42.2626° N / 71.8023° W" year="1926" />
+              <OriginPanel {...media.goddard} sizes="(min-width: 1680px) 887px, (min-width: 768px) 54vw, 92vw" alt="Robert H. Goddard" code="GH-01" tag="SPACE" coords="42.2626° N / 71.8023° W" year="1926" />
               <figcaption className="mt-8">
                 <div className="flex items-baseline justify-between gap-6">
                   <span className="display-lg">GOD</span>
@@ -328,7 +305,7 @@ function Index() {
               </figcaption>
             </figure>
             <figure className="founder-card origin-b reveal" style={{ transitionDelay: "120ms" }}>
-              <OriginPanel src={oppenheimerImg} alt="J. Robert Oppenheimer" code="GH-02" tag="DEFENSE" coords="35.8800° N / 106.3031° W" year="1943" />
+              <OriginPanel {...media.oppenheimer} sizes="(min-width: 1680px) 625px, (min-width: 768px) 38vw, 92vw" alt="J. Robert Oppenheimer" code="GH-02" tag="DEFENSE" coords="35.8800° N / 106.3031° W" year="1943" />
               <figcaption className="mt-8">
                 <div className="flex items-baseline justify-between gap-6">
                   <span className="display-lg">HEIMER</span>
@@ -351,7 +328,7 @@ function Index() {
           <div className="mt-16 grid items-end gap-10 md:grid-cols-12 md:gap-8 lg:gap-12">
             <div className="reveal founder-portrait-wrap md:col-span-5 md:row-span-2 md:self-center lg:col-span-4 lg:row-span-1 lg:self-end">
               <div className="founder-portrait">
-                <img src={bossPortrait} alt="Natthakorn “Boss” Mueangsangsri, Founder & CEO of GodHeimer Technologies" loading="lazy" className="founder-portrait-img" />
+                <img {...media.boss} sizes="(min-width: 1680px) 485px, (min-width: 1024px) 29vw, (min-width: 768px) 38vw, (min-width: 640px) 360px, 320px" alt="Natthakorn “Boss” Mueangsangsri, Founder & CEO of GodHeimer Technologies" loading="lazy" decoding="async" className="founder-portrait-img" />
                 <span className="hud-corner tl" /><span className="hud-corner tr" />
                 <span className="portrait-tag mono"><span className="portrait-tag-left">GH-03 // FOUNDER</span><span className="portrait-tag-meta">EST. 2026</span></span>
               </div>

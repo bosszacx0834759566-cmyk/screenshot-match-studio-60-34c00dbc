@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 
-type Props = { src: string; alt: string; code: string; tag: string; coords: string; year: string };
+type Props = { src: string; srcSet?: string; sizes?: string; width: number; height: number; alt: string; code: string; tag: string; coords: string; year: string };
 
 /** Full-bleed image panel with a scroll-driven aperture reveal and parallax. */
-export function OriginPanel({ src, alt, code, tag, coords, year }: Props) {
+export function OriginPanel({ src, srcSet, sizes, width, height, alt, code, tag, coords, year }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export function OriginPanel({ src, alt, code, tag, coords, year }: Props) {
   return (
     <div ref={ref} className="origin-panel">
       <div className="origin-aperture">
-        <img src={src} alt={alt} loading="lazy" className="origin-img" />
+        <img src={src} srcSet={srcSet} sizes={sizes} width={width} height={height} alt={alt} loading="lazy" decoding="async" className="origin-img" />
       </div>
       <div className="origin-hud mono" aria-hidden="true">
         <span className="origin-hud-tl">{code} // {tag}</span>
