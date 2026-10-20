@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { media } from "../media";
 const assetDir = join(__dirname, "../assets");
 const delivery = readFileSync(join(__dirname, "../media.ts"), "utf8");
-const pointers = [...delivery.matchAll(/@\/assets\/([^"\n]+\.asset\.json)/g)].map((match) => match[1]);
+const pointers = [...delivery.matchAll(/@\/assets\/([^"\n]+\.asset\.json)/g)].flatMap((match) => match[1] ? [match[1]] : []);
 
 describe("media assets", () => {
   for (const name of pointers) {
