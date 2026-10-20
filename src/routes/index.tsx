@@ -209,7 +209,7 @@ function Index() {
         </div>
 
         <div className="site-container relative z-10 pb-10 pt-32">
-          <div className="mono reveal mb-10 flex flex-wrap gap-x-8 gap-y-2 text-paper/50"><span>● Link status: nominal</span><span>Lat 13.7563° N / Lon 100.5018° E</span><Clock /></div>
+          <div className="mono reveal mb-10 flex flex-wrap gap-x-8 gap-y-2 text-paper"><span>● Link status: nominal</span><span>Lat 13.7563° N / Lon 100.5018° E</span><Clock /></div>
           <div className="editorial-hero reveal mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-paper/60"><span className="text-paper">16-16-16</span><span>Thailand</span><span>Space</span></div>
           <h1 className="hero-title"><Lines lines={["Bridging", <span className="hero-sub">Space  Earth.</span>]} /></h1>
           <div className="mt-14 grid gap-10 border-t border-line-dark pt-8 lg:grid-cols-12">
