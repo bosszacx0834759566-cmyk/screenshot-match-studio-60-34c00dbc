@@ -18,4 +18,5 @@
 
 - Decorative section keywords and codes use the shared EditorialStrip presentation with semantic colors and wrapping styles; why: annotations stay consistent across dark/light sections and small screens without changing factual content.
 
-- Original imported media pointers are archived in place and must not be rendered; use the restored current-project pointers for all live media. Why: imported pointers are scoped to the source project and fail on this site's origin.
+- Original imported media pointers are archived in place and must not be rendered; use current-project pointers for all live media. Why: imported pointers are scoped to the source project and fail on this site's origin.
+- Centralize immutable optimized image variants, dimensions, poster, and shared video in src/media.ts; use responsive lazy images below the fold. Why: one delivery map preserves original media and avoids oversized downloads.
